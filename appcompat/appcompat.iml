@@ -3,7 +3,7 @@
   <component name="FacetManager">
     <facet type="android" name="Android">
       <configuration>
-        <option name="PACK_TEST_CODE" value="true" />
+        <option name="LIBRARY_PROJECT" value="true" />
         <option name="UPDATE_PROPERTY_FILES" value="true" />
       </configuration>
     </facet>
@@ -16,8 +16,6 @@
     </content>
     <orderEntry type="jdk" jdkName="Android 4.1.2 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="orion-viewer" scope="PROVIDED" />
-    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>
 
