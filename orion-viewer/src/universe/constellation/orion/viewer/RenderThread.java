@@ -312,12 +312,15 @@ public class RenderThread extends Thread implements Renderer {
 
         Point leftTopCorner = layout.convertToPoint(curPos);
 
-        int [] data = doc.renderPage(curPos.pageNumber, curPos.docZoom, width, height, leftTopCorner.x, leftTopCorner.y, leftTopCorner.x + width, leftTopCorner.y + height);
+        Bitmap renderBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888); //TODO cache
+        doc.renderPage(curPos.pageNumber, renderBitmap, curPos.docZoom, width, height, leftTopCorner.x, leftTopCorner.y, leftTopCorner.x + width, leftTopCorner.y + height);
 
         long startTime = System.currentTimeMillis();
 
         cacheCanvas.setBitmap(bitmap);
-        cacheCanvas.drawBitmap(data, 0, width, 0, 0, width, height, false, null);
+        Rect src = new Rect(0, 0, width, height);
+        Rect dest = new Rect(0, 0, width, height);
+        cacheCanvas.drawBitmap(renderBitmap, src, dest, new Paint());
 
         long endTime = System.currentTimeMillis();
         Common.d("Drawing bitmap in cache " + 0.001 * (endTime - startTime) + " s");
