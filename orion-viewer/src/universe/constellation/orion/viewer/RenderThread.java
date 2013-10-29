@@ -300,7 +300,7 @@ public class RenderThread extends Thread implements Renderer {
         }
         if (bitmap == null) {
             Common.d("Creating Bitmap " + bitmapConfig + " " + screenWidth + "x" + screenHeight + "...");
-            bitmap = Bitmap.createBitmap(screenWidth, screenHeight, bitmapConfig);
+            bitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888);
         } else {
             Common.d("Cached ");
         }
