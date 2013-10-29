@@ -627,6 +627,7 @@ JNI_FN(MuPDFCore_drawPage)(JNIEnv *env, jobject thiz,jobject bitmap,
 	page_cache *pc = &glo->pages[glo->current];
 	int hq = (patchW < pageW || patchH < pageH);
 	fz_matrix scale;
+	int num_pixels = pageW * pageH;
 
 	if (pc->page == NULL)
 		return 0;
@@ -738,6 +739,7 @@ JNI_FN(MuPDFCore_drawPage)(JNIEnv *env, jobject thiz,jobject bitmap,
 		fz_free_device(dev);
 		dev = NULL;
 		fz_drop_pixmap(ctx, pix);
+		orion_updateContrast((unsigned char *) pixels, num_pixels*4);
 		LOGE("Rendered");
 	}
 	fz_always(ctx)
