@@ -255,11 +255,9 @@ public class OrionViewerActivity extends OrionBaseActivity {
 
         getOrionContext().onNewBook(filePath);
         try {
-            OptionActions.DEBUG.doAction(this, false, getGlobalOptions().getBooleanProperty("DEBUG", false));
-
             lastPageInfo = LastPageInfo.loadBookParameters(this, filePath);
             getOrionContext().setCurrentBookParameters(lastPageInfo);
-
+            OptionActions.DEBUG.doAction(this, false, getGlobalOptions().getBooleanProperty("DEBUG", false));
 
             doc = FileUtil.openFile(filePath);
 
@@ -954,7 +952,7 @@ public class OrionViewerActivity extends OrionBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(Device.Info.NOOK_CLASSIC ? R.menu.nook_menu : R.menu.menu, menu);
-        boolean isShowing = getActionBar().isShowing();
+        boolean isShowing = getSupportActionBar().isShowing();
         SupportMenuItem item = (SupportMenuItem) menu.getItem(0);
         item.setShowAsAction(isShowing ? SupportMenuItem.SHOW_AS_ACTION_IF_ROOM : SupportMenuItem.SHOW_AS_ACTION_NEVER);
         item = (SupportMenuItem) menu.getItem(4);
