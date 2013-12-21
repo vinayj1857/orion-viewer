@@ -1,0 +1,63 @@
+project.ext {
+    native_folder = "../thirdparty"
+    mupdf = native_folder + "/mupdf"
+    djvu = native_folder + "/djvu"
+}
+
+buildscript {
+    repositories { mavenCentral() }
+}
+
+task checkoutDjvu << {
+    exec {
+        commandLine = ['git', 'clone', 'git://git.code.sf.net/p/djvu/djvulibre-git', djvu]
+    }
+
+    exec {
+        workingDir file(djvu)
+        commandLine = ['git', 'checkout', 'release.3.5.24']
+    }
+}
+
+task checkoutMupdf << {
+    exec {
+        commandLine = ['git', 'clone', 'git://git.ghostscript.com/mupdf.git', mupdf]
+    }
+
+    exec {
+        workingDir file(mupdf)
+        commandLine = ['git', 'checkout', '1.3']
+    }
+
+    exec {
+        workingDir file(mupdf)
+        commandLine 'git', 'submodule', 'init'
+    }
+    exec {
+        workingDir file(mupdf)
+        commandLine 'git', 'submodule', 'update'
+    }
+}
+
+task copyDjvu << {
+    copy {
+        from 'orion-viewer/jni/djvu'
+        into djvu
+    }
+    copy {
+        from 'orion-viewer/jni/common'
+        into djvu + '/android/jni'
+    }
+}
+
+task copyMupdf(type: Copy)  {
+    from 'orion-viewer/jni/mupdf'
+    from 'orion-viewer/jni/common'
+    into mupdf + '/platform/android/jni'
+}
+
+//RUN ME
+task prepareNativePart(dependsOn: [copyDjvu, copyMupdf]) {
+    copyDjvu.dependsOn checkoutDjvu
+    copyMupdf.dependsOn checkoutMupdf
+}
