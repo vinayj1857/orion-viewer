@@ -50,6 +50,7 @@ import static android.view.MotionEvent.ACTION_DOWN;
 public class TouchAutomata extends TouchAutomataOldAndroid {
 
     private final int MOVE_THRESHOLD;
+    private final boolean moveOnPinchZoom;
 
     private Point startFocus = new Point();
 
@@ -59,8 +60,9 @@ public class TouchAutomata extends TouchAutomataOldAndroid {
 
     private ScaleDetectorWrapper gestureDetector;
 
-    public TouchAutomata(OrionViewerActivity activity, OrionView view) {
+    public TouchAutomata(OrionViewerActivity activity, OrionView view, boolean moveOnPinchZoom) {
         super(activity, view);
+        this.moveOnPinchZoom = moveOnPinchZoom;
         int sdkVersion = activity.getOrionContext().getSdkVersion();
         gestureDetector = sdkVersion >= 8 ? new AndroidScaleWrapper(activity, this) : new OldAdroidScaleWrapper(activity, this);
         double edgeSize = DensityUtil.calcScreenSize(40, activity); //40 px * density factor
@@ -118,7 +120,7 @@ public class TouchAutomata extends TouchAutomataOldAndroid {
                         nextState = States.UNDEFINED;
                     } else {
                         getView().beforeScaling();
-                        getView().doScale(1f, start0, last0);
+                        getView().doScale(1f, start0, start0, new Point(last0.x - start0.x, last0.y - start0.y));
                         getView().postInvalidate();
                     }
                     processed = true;
@@ -207,6 +209,8 @@ public class TouchAutomata extends TouchAutomataOldAndroid {
 
             case PINCH_ZOOM:
                 if (pinch != null) {
+                    float newX;
+                    float newY;
                     switch (pinch) {
                         case START_SCALE:
                             curScale = gestureDetector.getScaleFactor();
@@ -217,19 +221,29 @@ public class TouchAutomata extends TouchAutomataOldAndroid {
                             curScale *= gestureDetector.getScaleFactor();
                             endFocus.x = (int) gestureDetector.getFocusX();
                             endFocus.y = (int) gestureDetector.getFocusY();
+                            if (moveOnPinchZoom) {
+                                newX = (int) ((startFocus.x) * (curScale - 1) + (startFocus.x - endFocus.x) );
+                                newY = (int) ((startFocus.y) * (curScale - 1) + (startFocus.y - endFocus.y));
+                            } else {
+                                newX = 0;//(startFocus.x - endFocus.x);
+                                newY = 0;//(startFocus.y - endFocus.y);
+                            }
+
                             getView().beforeScaling();
-                            getView().doScale(curScale, startFocus, endFocus);
+                            getView().doScale(curScale, startFocus, endFocus, new Point((int) newX,(int) newY));
                             getView().postInvalidate();
                             //System.out.println(endFocus.x + " onscale " + endFocus.y);
                             break;
                         case END_SCALE:
                             nextState = States.UNDEFINED;
-                            float newX = (int) ((startFocus.x) * (curScale - 1) + (startFocus.x - endFocus.x) );
-                            float newY = (int) ((startFocus.y) * (curScale - 1) + (startFocus.y - endFocus.y));
                             getView().afterScaling();
-                            //There is no start scale event!!!!
-                            if (Device.Info.TEXET_TB176FL) {
-                                curScale *= gestureDetector.getScaleFactor();
+//                            curScale *= gestureDetector.getScaleFactor();
+//                            endFocus.x = (int) gestureDetector.getFocusX();
+//                            endFocus.y = (int) gestureDetector.getFocusY();
+                            if (moveOnPinchZoom) {
+                                newX = (int) ((startFocus.x) * (curScale - 1) + (startFocus.x - endFocus.x) );
+                                newY = (int) ((startFocus.y) * (curScale - 1) + (startFocus.y - endFocus.y));
+                            } else {
                                 newX = (int) ((startFocus.x) * (curScale - 1));
                                 newY = (int) ((startFocus.y) * (curScale - 1));
                             }

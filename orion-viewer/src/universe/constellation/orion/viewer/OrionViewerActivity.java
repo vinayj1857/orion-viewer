@@ -134,7 +134,7 @@ public class OrionViewerActivity extends OrionBaseActivity {
         initDialogs();
 
         myIntent = getIntent();
-        touchListener = new TouchAutomata(this, view);
+        touchListener = new TouchAutomata(this, view, false);
     }
 
     private void initDialogs() {

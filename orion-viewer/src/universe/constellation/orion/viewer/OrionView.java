@@ -61,6 +61,7 @@ public class OrionView extends View implements OrionImageView {
     private Point startFocus;
 
     private Point endFocus;
+    private Point delta;
 
     private Paint currentPaint;
 
@@ -159,19 +160,19 @@ public class OrionView extends View implements OrionImageView {
             if (inScaling) {
                 Common.d("in scaling");
                 canvas.save();
-                canvas.translate((startFocus.x) * (1 - myScale) - startFocus.x + endFocus.x, (startFocus.y) * (1 - myScale) - startFocus.y + endFocus.y);
                 canvas.scale(myScale, myScale);
+                canvas.translate(2*(startFocus.x) * (1 - myScale) + endFocus.x/myScale - startFocus.x + delta.x, 2*(startFocus.y) * (1 - myScale) + endFocus.y/myScale - startFocus.y + delta.y);
             }
 
             canvas.drawBitmap(bitmap, 0, 0, currentPaint);
 
             if (inScaling) {
-                Common.d("in scaling 2");
+                Common.d("in scaling: border draw");
                 canvas.restore();
 
                 borderPaint.setColor(isNightMode ? Color.WHITE : Color.BLACK);
-                int left = (int) ((-info.x.offset - startFocus.x) * myScale + endFocus.x);
-                int top = (int) ((-info.y.offset - startFocus.y) * myScale + endFocus.y);
+                int left = (int) ((-info.x.offset /*- startFocus.x*/) * myScale + delta.x);
+                int top = (int) ((-info.y.offset /*- startFocus.y*/) * myScale + delta.y);
 
                 int right = (int) (left + info.x.pageDimension * myScale);
                 int bottom = (int) (top + info.y.pageDimension * myScale);
@@ -277,10 +278,11 @@ public class OrionView extends View implements OrionImageView {
         return bitmap;
     }
 
-    public void doScale(float scale, Point startFocus, Point endFocus) {
+    public void doScale(float scale, Point startFocus, Point endFocus, Point delta) {
         this.scale = scale;
         this.startFocus = startFocus;
         this.endFocus = endFocus;
+        this.delta = delta;
     }
 
     public void beforeScaling() {
